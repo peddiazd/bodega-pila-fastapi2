@@ -39,3 +39,4 @@ class ResumenEstante(BaseModel):
     esta_vacio: bool = Field(..., description="Indica si el estante está vacío")
     esta_lleno: bool = Field(..., description="Indica si el estante está lleno")
     peso_total_kg: float = Field(..., ge=0, description="Peso total en kilogramos")
+
