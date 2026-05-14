@@ -12,13 +12,8 @@ from repositorio.bodega import (
 router = APIRouter()
 
 
-# Endpoint 1 - Crear estante
 @router.post("/estantes", status_code=201)
 def crear_nuevo_estante(datos: EstanteEntrada):
-    """
-    Crea un nuevo estante vacío en la bodega.
-    Retorna 409 si el ID ya existe.
-    """
     if estante_existe(datos.id_estante):
         raise HTTPException(
             status_code=409,
@@ -33,14 +28,8 @@ def crear_nuevo_estante(datos: EstanteEntrada):
     }
 
 
-# Endpoint 2 - Ingresar caja al estante (PUSH)
 @router.post("/estantes/{id_estante}/cajas", status_code=201)
 def ingresar_caja(id_estante: str, datos: CajaEntrada):
-    """
-    Ingresa una caja al tope del estante (PUSH).
-    Retorna 404 si el estante no existe.
-    Retorna 409 si el estante está lleno.
-    """
     estante = get_estante(id_estante)
     if estante is None:
         raise HTTPException(
@@ -68,14 +57,8 @@ def ingresar_caja(id_estante: str, datos: CajaEntrada):
     }
 
 
-# Endpoint 3 - Retirar caja del tope (POP)
 @router.delete("/estantes/{id_estante}/cajas/tope", status_code=200)
 def retirar_caja_tope(id_estante: str):
-    """
-    Retira la caja del tope del estante (POP).
-    Retorna 404 si el estante no existe.
-    Retorna 409 si el estante está vacío.
-    """
     estante = get_estante(id_estante)
     if estante is None:
         raise HTTPException(
@@ -96,13 +79,8 @@ def retirar_caja_tope(id_estante: str):
     }
 
 
-# Endpoint 4 - Ver tope sin retirar (PEEK)
 @router.get("/estantes/{id_estante}/cajas/tope", status_code=200)
 def ver_tope(id_estante: str):
-    """
-    Consulta la caja del tope sin retirarla (PEEK).
-    Retorna 404 si el estante no existe o está vacío.
-    """
     estante = get_estante(id_estante)
     if estante is None:
         raise HTTPException(
@@ -123,13 +101,8 @@ def ver_tope(id_estante: str):
     }
 
 
-# Endpoint 5 - Listar todas las cajas (LISTAR)
 @router.get("/estantes/{id_estante}/cajas", status_code=200)
 def listar_cajas(id_estante: str):
-    """
-    Lista todas las cajas del estante de tope a base.
-    Retorna 404 si el estante no existe.
-    """
     estante = get_estante(id_estante)
     if estante is None:
         raise HTTPException(
