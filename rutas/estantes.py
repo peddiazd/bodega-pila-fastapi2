@@ -120,3 +120,72 @@ def listar_cajas(id_estante: str):
         "orden": "tope → base",
         "cajas": cajas_con_posicion
     }
+
+
+@router.get("/estantes/{id_estante}", status_code=200)
+def estado_estante(id_estante: str):
+    """
+    Retorna el resumen operativo del estante.
+    Retorna 404 si el estante no existe.
+    """
+    estante = get_estante(id_estante)
+    if estante is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"El estante {id_estante} no existe en la bodega."
+        )
+    return {
+        "id_estante": estante.id_estante,
+        "ubicacion": estante.ubicacion,
+        "tamanio": estante.tamanio,
+        "esta_vacio": estante.esta_vacio(),
+        "esta_lleno": estante.esta_lleno(),
+        "peso_total_kg": estante.peso_total()
+    }
+
+
+@router.get("/estantes", status_code=200)
+def listar_estantes():
+    """
+    Retorna el resumen de todos los estantes de la bodega.
+    """
+    bodega = get_bodega()
+    estantes = [
+        {
+            "id_estante": e.id_estante,
+            "ubicacion": e.ubicacion,
+            "tamanio": e.tamanio,
+            "esta_vacio": e.esta_vacio(),
+            "esta_lleno": e.esta_lleno(),
+            "peso_total_kg": e.peso_total()
+        }
+        for e in bodega.values()
+    ]
+    return {
+        "total_estantes": len(estantes),
+        "estantes": estantes
+    }
+
+
+@router.get("/estantes/{id_estante}/nodos", status_code=200)
+def ver_nodos(id_estante: str):
+    """
+    Endpoint educativo que muestra la cadena de nodos enlazados.
+    Retorna 404 si el estante no existe.
+    """
+    estante = get_estante(id_estante)
+    if estante is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"El estante {id_estante} no existe en la bodega."
+        )
+    representacion = estante.representacion_nodos()
+    tope = estante.tope.caja.get("codigo") if estante.tope else None
+    cajas = estante.listar()
+    base = cajas[-1].get("codigo") if cajas else None
+    return {
+        "representacion": representacion,
+        "tope": tope,
+        "base": base,
+        "tamanio": estante.tamanio
+    }
