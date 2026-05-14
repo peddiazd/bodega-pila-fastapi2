@@ -14,6 +14,7 @@ router = APIRouter()
 
 @router.post("/estantes", status_code=201)
 def crear_nuevo_estante(datos: EstanteEntrada):
+    
     if estante_existe(datos.id_estante):
         raise HTTPException(
             status_code=409,
