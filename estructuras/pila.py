@@ -184,3 +184,4 @@ class PilaEstante:
             nodo_actual = nodo_actual.siguiente
         
         return ' → '.join(representacion) + ' → NULL'
+
